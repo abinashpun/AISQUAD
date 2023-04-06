@@ -1,9 +1,21 @@
 # Primary objective of this repository is to:
 
 1. Containerize the face train
-1. Register the created docker to AWS ECR
+1. Register the created Docker image to AWS ECR
 1. Trigger a traning job using python script **training_job.py**
 
+```mermaid
+graph LR;
+    A[Hard edge] -->B(Round edge);
+    B --> C{Decision};
+    C -->|One| D[Result one];
+    C -->|Two| E[Result two];
+```
+
+```mermaid
+graph TD;
+    A-->H;
+```
 
 # Build Docker image and push to ECR
 ## Dockerfile
