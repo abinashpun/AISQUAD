@@ -10,7 +10,7 @@ The detected face is alined using the face landmark file, `shape_predictor_5_fac
 1. **Normalization**: After alignment, the image pixel is normaized to [0,1] (?).
 
 
-1. **Representation (Embedding)**: Embedding vector with is created from the normalized detected face. The ArcFace model built from ResNry34 architecture is used to create the embeddings. The pretrained weight for the model is downloaded from [here](https://github.com/serengil/deepface_models/releases) and final model `AISquad_model.h5` is derived. The embedding vector length is 512. 
+1. **Representation (Embedding)**: Embedding vector with is created from the normalized detected face. The ArcFace model built from ResNet34 architecture is used to create the embeddings. The pretrained weight for the model is downloaded from [here](https://github.com/serengil/deepface_models/releases) and final model `AISquad_model.h5` is derived. The embedding vector length is 512. 
 
 1. **Classification (Identification)**: Finally, the cosine distance between embedding vector of the detected face and those from employee database is used to identify the detected face. The threshold for the cosine distance is determined with the chefboost decision tree framework (`rules.py`).  
 
