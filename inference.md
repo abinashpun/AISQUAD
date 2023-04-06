@@ -1,7 +1,10 @@
 # Introduction
 This repository contains the code framework for inference part of the face detection. 
 
-# Face Recognition Pipeline
+# Face Recognition 
+
+![alt text](https://github.com/abinashpun/AISQUAD/blob/master/outline.png?raw=true "face")
+
  1. **Face Detection**: At this step, the region of face from photo (captured by webcam or input photo) is detected. The HOG + liner SVM based face detector from `dlib` software is used for the face detction. 
 
 1. **Alignment**: 
