@@ -2,13 +2,13 @@
 This repository contains the code framework for inference part of the face detection. 
 
 # Face Recognition Pipeline
-## Face Detection: 
+ 1. **Face Detection**: 
 Detect the region of face from photo (captured by webcam or input photo). The HOG + liner SVM based face detector from dlib is used
-## Alignment: 
+1. **Alignment**: 
 Align the detected face
-## Normalization:
+1. **Normalization**:
  Normalize the image pixel (face)
-## Representation (Embedding):
+1. **Representation (Embedding)**:
 
 ## Classification
  (i.e. identifying person correspondig to face)
