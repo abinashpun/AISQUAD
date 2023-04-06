@@ -1,26 +1,29 @@
 # Primary objective of this repository is to:
 
-    1) Containerize the face train
-
-    2) Register the created docker to AWS ECR
-
-    3) Trigger a traning job using python script **training_job.py**
+1. Containerize the face train
+1. Register the created docker to AWS ECR
+1. Trigger a traning job using python script **training_job.py**
 
 
-# Build docker and push to ecr
+# Build Docker image and push to ECR
+## Dockerfile
 
-The script "build-and-push.sh" will create the docker image on the sagemaker notebook instance using sagemaker credentials and pushes to ECR
+The `Dockerfile` contains basic configurations required to create Docker image. It constructs environmental varibales (PATH, WORKDIR), copy all the files to WORKDIR, installs software dependencies from `requirement.txt` and creates executable for training, `train`.
+
+## build-and-push.sh
+
+The script `build-and-push.sh` is driving script for `Dockerfile` to create the docker image on the sagemaker notebook instance using sagemaker credentials and pushes to Amazon ECR (Elastic Container Registry). 
 
 The user must have sagemaker access to create repositories to AWS-ECR and full ECR access roles to execute this command
 
 ```bash
-./build-and-push.sh <name-of-ecr-repo> 
+./build-and-push.sh <name-of-docker-image> 
 ```
 
-for example, if you want to create an ECR repo with the name "amniscient-voice-training" one should use the following
+for example, if you want to create an docker image with the name "amniscient-face-training" one should use the following
 
 ```bash
-./build-and-push.sh amniscient-voice-training
+./build-and-push.sh amniscient-face-training
 ```
 This script creates the image uri and stores it in a txt file
 
@@ -28,7 +31,7 @@ This script creates the image uri and stores it in a txt file
 
 This uri is used in triggering the training job.
 
-
+<!---
 # Docker image
     
 In the folder container, the Dockerfile is used to build the yolo image for training.
@@ -40,22 +43,25 @@ If one wishes to update or downgrade the yolo repo, change the line 17 to desire
 ```bash
 git clone --branch v6.2 https://github.com/ultralytics/yolov5 -> git clone --branch v4.2 https://github.com/ultralytics/yolov5
 ```
+-->
+
 
 # Training job
 
-## 1) Dependencies and sagemaker env
+## Dependencies and SageMaker env
 
 First requirements :
 
 Make sure you have an AWS IAM Role capable of running SageMaker job and having read/write access to the S3 buckets that contains :
 
-  - yolo pretraining model and inputs (see 3. below)
+  - ArcFace pretrained model, face landmark file and inputs
   
   - data set images and labels
   
-For this code we will be using the sagemaker access role
 
-## 2) Download yolo model with pretrained weights
+For this code we will be using the sagemaker access role
+<!---
+## 2. Download yolo model with pretrained weights
 
 In this example you can either use yolov5 small or large. But you can download other flavor from the yolov5 project, and adjust the training inputs accordingly
 
@@ -63,8 +69,9 @@ In this example you can either use yolov5 small or large. But you can download o
 wget https://github.com/ultralytics/yolov5/releases/download/v6.2/yolov5s.pt -O ./yolo-inputs/input/data/weights/yolov5s.pt
 wget https://github.com/ultralytics/yolov5/releases/download/v6.2/yolov5l.pt -O ./yolo-inputs/input/data/weights/yolov5l.pt
 ```  
+--->
 
-## 3) Archive yolo configuration items and push them to S3
+## Archive yolo configuration items and push them to S3
 
 ### Job configuration 
 
@@ -84,7 +91,7 @@ in local folder 'yolo-inputs' :
 
 You now need to upload the content of 'yolo-input' into one of your S3, within a folder structure named 'sagemaker_training_jobs/yolo-inputs'
 
-## 4) Define the training job cfg file locations on s3
+## Define the training job cfg file locations on s3
 
 Deep dive code and instuctions can be found in the 
 
