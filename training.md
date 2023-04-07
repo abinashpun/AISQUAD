@@ -7,7 +7,7 @@
 ```mermaid
 graph LR;
     A[Inputs in S3 Bucket]] -->C[EC2 instance GPU/CPU];
-    B[Alorithm ECR (Docker Image)] -->C;
+    B[Alorithm ECR ,Docker Image] -->C;
     C -->D[Output in S3 bucket];
 ```
 
