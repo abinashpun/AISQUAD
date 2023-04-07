@@ -12,6 +12,7 @@ A[Inputs in S3 Bucket] -->C[EC2 instance GPU/CPU];
     C -->D[Output in S3 bucket];
 ```
 
+First, we need to make sure you have an AWS IAM Role capable of running SageMaker Training job and having read/write access to the S3 buckets contiaining input/output files.
 
 # Build Docker image and push to ECR
 ## Dockerfile
@@ -39,7 +40,7 @@ This script creates the image uri and stores it in a txt file
 
 This uri is used in triggering the training job.
 
-# Set up S3 for input and configuration files
+# Set up S3 for input/output and configuration files
 The input images and configuration files for the training should be uploaded in the Amason S3 bucket. Thus uploaded files/repo are mounted as `/opt/ml/<input_repo>` in the EC2 where training job is ran. Also, all the ouputs from the training job should be saved to /opt/ml/<output_rep> in EC2. After the completion of the training job, the output files (.tar foramt) are copied back to S3 bucket. 
 
 The following S3 bucket is used for the training job. 
@@ -53,112 +54,58 @@ The configuration files i.e. `constants.py` is stored in `s3://<bucket>/amni_fac
 
 Finally, the output files; `final_mean_embeddings.csv, rules.py, saved_embeddings.pkl` are copied back to `s3://<bucket>/amni_face_train/results/`.
 
-<!---
-# Docker image
-    
-In the folder container, the Dockerfile is used to build the yolo image for training.
-
-This file uses the latest yolo repo at the time of model building "branch v6.2" for training
-    
-If one wishes to update or downgrade the yolo repo, change the line 17 to desired tag. For example:
-    
-```bash
-git clone --branch v6.2 https://github.com/ultralytics/yolov5 -> git clone --branch v4.2 https://github.com/ultralytics/yolov5
-```
--->
-
-
-# Training job
-
-## Dependencies and SageMaker env
-
-First requirements :
-
-Make sure you have an AWS IAM Role capable of running SageMaker job and having read/write access to the S3 buckets that contains :
-
-  - ArcFace pretrained model, face landmark file and inputs
-  
-  - data set images and labels
-  
-
-For this code we will be using the sagemaker access role
-<!---
-## 2. Download yolo model with pretrained weights
-
-In this example you can either use yolov5 small or large. But you can download other flavor from the yolov5 project, and adjust the training inputs accordingly
-
-```bash
-wget https://github.com/ultralytics/yolov5/releases/download/v6.2/yolov5s.pt -O ./yolo-inputs/input/data/weights/yolov5s.pt
-wget https://github.com/ultralytics/yolov5/releases/download/v6.2/yolov5l.pt -O ./yolo-inputs/input/data/weights/yolov5l.pt
-```  
---->
-
-## Archive yolo configuration items and push them to S3
-
-### Job configuration 
-
-in local folder 'yolo-inputs' :
-
-  - make sure that in input/data/weights you can find the preweighted model you want to use for the transfer learning
-  
-  - make sure that in input/data/cfg you can find the yolo model configuration file related to the preweighted model you want to use. If not file are available here : https://github.com/ultralytics/yolov5/tree/master/models
-  
-  - make sure that in input/data/cfg you can find the yolo model hyperparameter file. If not file are available here : https://github.com/ultralytics/yolov5/tree/master/data/hyps
-  
-  - in input/data/cfg/train-args.json adjust the training job parameters (number of epochs, batch size, preweighted model name)
-  
-  - in input/data/cfg/amniscient.yaml adjust the number of object categories and their name (nc and names). train and val path must remain as they are : docker volume are mounted to these path.
-  
-### Job configuration input upload
-
-You now need to upload the content of 'yolo-input' into one of your S3, within a folder structure named 'sagemaker_training_jobs/yolo-inputs'
-
-## Define the training job cfg file locations on s3
-
-Deep dive code and instuctions can be found in the 
-
-    "training-job.ipynb"
-
-Set the S3 locations for training jobs for example:
+The `training_job.py` is the main script with sets up the configuration and instuctions for the training. Following is the snippet of the script which sets S3 location for training job.
 
 ```python
 bucket = "sagemaker-studio-833537904510-3lvvbxobayc"
-s3_input = 's3://{}/sagemaker_training_jobs/yolo-inputs'.format(bucket)
-s3_images = "s3://sagemaker-studio-833537904510-3lvvbxobayc/Rajiv_Backup/yolov5_test/datasets/amniscient_images/images" # Images files are here, in a subfolder named 'train'
-s3_labels = "s3://sagemaker-studio-833537904510-3lvvbxobayc/Rajiv_Backup/yolov5_test/datasets/amniscient_images/labels" # Label files are here, in a subfolder named 'train'
 
-cfg='{}/input/data/cfg/'.format(s3_input)
-weights='{}/input/data/weights/'.format(s3_input)
+with open (os.path.join('ecr_image_fullname.txt'), 'r') as f:
+    container = f.readlines()[0][:-1]
+
+s3_input = 's3://{}/amni_face_train'.format(bucket)
+
+cfg='{}/cfg/'.format(s3_input)
 outpath='{}/results/'.format(s3_input)
+images='{}/face_imgs/'.format(s3_input)
 
-images='{}/'.format(s3_images)
-labels='{}/'.format(s3_labels)
 ```
 
-## 5) Trigger a training job
+
+
+
+#  Trigger a training job
 
 Now we can trigger the training job using the sagemaker utilities. This can be done with right IAM roles for sagemaker.
 
 ```python
+
+# Job configuration
 from sagemaker.session import TrainingInput
 
 inputs = {
     "cfg": TrainingInput(cfg),
-    "images": TrainingInput(images),
-    "weights": TrainingInput(weights),
-    "labels": TrainingInput(labels),
+    "face_imgs": TrainingInput(images),
 }
 
 estimator = Estimator(
     image_uri=container,
     role=role,
     instance_count=1,
-    instance_type='ml.p3.2xlarge',
+    instance_type='ml.m5.large',
     # instance_type='local',
     input_mode='File',
     output_path=outpath,
-    base_job_name='amniscient-yolov5-1'
+    base_job_name='amni-face-train'
 )
 
 estimator.fit(inputs)
 ```
+
+The following command will start the training job;
+
+```
+python training_job.py
+```
+
+# Step Function
+.....
