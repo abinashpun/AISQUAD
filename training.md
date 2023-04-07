@@ -39,6 +39,16 @@ This script creates the image uri and stores it in a txt file
 
 This uri is used in triggering the training job.
 
+# Set up S3 for input and configuration files
+The input images and configuration files for the training should be uploaded in the Amason S3 bucket. Thus uploaded files/repo are mounted as `/opt/ml/<input_repo>` in the EC2 where training job is ran. Also, all the ouputs from the training job should be saved to /opt/ml/<output_rep> in EC2. After the completion of the training job, the output files (.tar foramt) are copied back to S3 bucket. 
+
+The following S3 bucket is used for the training job. 
+
+```
+bucket = "sagemaker-studio-833537904510-3lvvbxobayc"
+```
+The image files of the employees are stored in `/amni_face_train/face_imgs/`
+
 <!---
 # Docker image
     
