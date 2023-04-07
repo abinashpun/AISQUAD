@@ -1,13 +1,14 @@
-# Primary objective of this repository is to:
+# Introduction
+The repository contains code framework related to the SMT (SageMaker Training) job for face recogintion. Following are the basic steps for the process;
 
-1. Containerize the face train
+1. Containerize the face train requriments with Docker image
 1. Register the created Docker image to AWS ECR
 1. Trigger a traning job using python script **training_job.py**
 
 ```mermaid
 graph LR;
 A[Inputs in S3 Bucket] -->C[EC2 instance GPU/CPU];
-    B[Alorithm ECR ,Docker Image] -->C;
+    B[Docker Image in AWS ECR] -->C;
     C -->D[Output in S3 bucket];
 ```
 
