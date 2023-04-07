@@ -47,7 +47,11 @@ The following S3 bucket is used for the training job.
 ```
 bucket = "sagemaker-studio-833537904510-3lvvbxobayc"
 ```
-The image files of the employees are stored in `/amni_face_train/face_imgs/`
+The image files of the employees are stored in `s3://<bucket>/amni_face_train/face_imgs/`.
+
+The configuration files i.e. `constants.py` is stored in `s3://<bucket>/amni_face_train/cfg/`.
+
+Finally, the output files; `final_mean_embeddings.csv, rules.py, saved_embeddings.pkl` are copied back to `s3://<bucket>/amni_face_train/results/`.
 
 <!---
 # Docker image
