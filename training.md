@@ -6,16 +6,11 @@
 
 ```mermaid
 graph LR;
-    A[Hard edge] -->B(Round edge);
-    B --> C{Decision};
-    C -->|One| D[Result one];
-    C -->|Two| E[Result two];
+    A[Inputs in S3 Bucket]] -->B[EC2 instance GPU/CPU];
+    C[Alorithm ECR (Docker Image)] --> B;
+    C --> D[Output in S3 bucket];
 ```
 
-```mermaid
-graph TD;
-    A-->H;
-```
 
 # Build Docker image and push to ECR
 ## Dockerfile
