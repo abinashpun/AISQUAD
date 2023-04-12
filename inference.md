@@ -8,7 +8,7 @@ This repository contains the code framework for inference part of the face detec
 
 ```mermaid
 graph LR;
-A[Input Image <br /> (from webcam)] -->B[Face Detector <br /> ( Captruring Face region)];
+A[Input Image <br /> (from webcam)] -->B[Face Detector <br />( Captruring Face region)];
     B -->C[Alignment <br /> (Aligned Face)]];
     C -->D[Normalization];
     D -->E[Embedding];
